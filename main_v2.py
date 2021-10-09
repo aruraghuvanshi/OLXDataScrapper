@@ -26,10 +26,12 @@ DRIVER = webdriver.Firefox()
 
 DRIVER.get(BASEURL + '/cars_c84')
 
-NUM_PAGES = 5
+NUM_PAGES = 20
 
 
 def get_carlinks_by_page(NUM_PAGES, DRIVER, BASEURL, HEADERS):
+    print('Opening Pages on Browser for Extraction. \033[0;31mPlease Wait...\033[0m')
+
     def find_fetch_car_links(BASEURL, HEADERS):
 
         r = requests.get(BASEURL + '/cars_c84', headers=HEADERS)
@@ -47,14 +49,22 @@ def get_carlinks_by_page(NUM_PAGES, DRIVER, BASEURL, HEADERS):
         time.sleep(1)
         return carlinks
 
-    cl, clx = [], []
-    count = 1
+    cl, clx, count = [], [], 1
+
     while count <= NUM_PAGES:
-        time.sleep(0.5)
-        btn = DRIVER.find_element_by_class_name('JbJAl')
-        print(f'\nLoading Page: {count} of {NUM_PAGES}.')
-        time.sleep(2)
-        btn.click()
+
+        print(f'\nLoading Page: \033[0;34m{count} of {NUM_PAGES}\033[0m.')
+        try:
+            btn = DRIVER.find_element_by_class_name('JbJAl')
+        except Exception as e:
+            print('Element not found on Page - {e}')
+
+        time.sleep(1.5)
+        try:
+            btn.click()
+        except Exception as e:
+            print(f'Element not foudn on page for extraction - {e}')
+
         count += 1
         k = find_fetch_car_links(BASEURL, HEADERS)
         cl.append(k)
@@ -62,12 +72,8 @@ def get_carlinks_by_page(NUM_PAGES, DRIVER, BASEURL, HEADERS):
     for ele in range(0, len(cl)):
         clx = clx + cl[ele]
 
-    time.sleep(1)
     print(f'\nTotal Records Fetched: {len(clx)} from {NUM_PAGES} pages.')
     return clx
-
-
-carlinks = get_carlinks_by_page(NUM_PAGES, DRIVER, BASEURL, HEADERS)
 
 
 def clean_up_string(original_string):
@@ -153,8 +159,10 @@ def get_vehicle_data(link):
     return vdata
 
 
+carlinks = get_carlinks_by_page(NUM_PAGES, DRIVER, BASEURL, HEADERS)
+
 vehicle_data = []
-for x in tqdm(carlinks, desc='PROGRESS', colour='green', ):
+for x in tqdm(carlinks, desc='PROGRESS', colour='green'):
     vh = get_vehicle_data(x)
     vehicle_data.append(vh)
 
