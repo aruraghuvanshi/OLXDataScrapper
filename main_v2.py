@@ -7,7 +7,9 @@ from tqdm import tqdm
 import numpy as np
 
 '''
-This script scraps data from User Cars section of the main page of OLX
+This script scraps data from User Cars section of the main page of OLX.
+Can take upto 4 seconds to open each page on the browser,
+and a progressbar will indicate the progress of extraction.
 '''
 
 HEADERS = {'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) \
@@ -20,6 +22,7 @@ DRIVER = webdriver.Firefox()
 DRIVER.get(BASEURL + '/cars_c84')
 
 NUM_PAGES = 5
+NUM_PAGES_X = 5      # This line is added to only test GitPush.
 
 
 def get_carlinks_by_page(NUM_PAGES, DRIVER, BASEURL, HEADERS):
