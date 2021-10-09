@@ -23,13 +23,13 @@ HEADERS = {'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36
 BASEURL = 'https://www.olx.in'
 
 driver = webdriver.Firefox()
-
 driver.get(BASEURL + '/cars_c84')
 
 NUM_PAGES = 1
 
 
 def get_carlinks_by_page(NUM_PAGES, driver, BASEURL, HEADERS):
+
     '''This function opens the browser to the baseurl entered and
     fetches pagewise extractable data and creates a list of URLS that
     the pipeline will parse to extract relevant used car data from OLX.'''
@@ -80,6 +80,8 @@ def get_carlinks_by_page(NUM_PAGES, driver, BASEURL, HEADERS):
     return clx
 
 
+
+
 def clean_up_string(original_string):
     characters_to_remove = "!()#~`$₹@[]"
 
@@ -90,7 +92,14 @@ def clean_up_string(original_string):
     return new_string.strip()
 
 
+
+
 def get_vehicle_data(link):
+
+    '''This function extracts the data from the relevant tags,
+    xpaths, classes and arranges them into a dictionary which is
+    eventually return and written to a pandas dataframe.'''
+
     vdata = {}
 
     r = requests.get(link, headers=HEADERS)
@@ -174,7 +183,9 @@ def get_vehicle_data(link):
     return vdata
 
 
+
 # -------------- Extraction and Inference Pipeline ----------------- ]
+
 
 carlinks = get_carlinks_by_page(NUM_PAGES, driver, BASEURL, HEADERS)
 
