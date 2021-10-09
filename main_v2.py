@@ -30,6 +30,10 @@ NUM_PAGES = 1
 
 
 def get_carlinks_by_page(NUM_PAGES, driver, BASEURL, HEADERS):
+    '''This function opens the browser to the baseurl entered and
+    fetches pagewise extractable data and creates a list of URLS that
+    the pipeline will parse to extract relevant used car data from OLX.'''
+
     print('Opening Pages on Browser for Extraction. \033[1;31mPlease Wait...\033[0m')
 
     def find_fetch_car_links(BASEURL, HEADERS):
@@ -109,15 +113,6 @@ def get_vehicle_data(link):
         price = 'Not Listed'
         vdata['price'] = price
         print(f'Data not found - {e}')
-
-    #     try:
-    #         mileage = sp.find('div', class_='_3qDp0').text.strip()
-    #         mileage = clean_up_string(mileage)
-    #         vdata['mileage'] = mileage
-    #     except Exception as e:
-    #         mileage = 'Not Listed'
-    #         vdata['mileage'] = mileage
-    #         print(f'Data not found - {e}')
 
     try:
         sold_by = sp.find('span', class_='_1hYGL').text.strip()
