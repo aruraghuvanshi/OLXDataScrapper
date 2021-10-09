@@ -204,3 +204,5 @@ print('\033[0;32mDone.\033[0m')
 df = pd.DataFrame(vehicle_data)
 df.dropna(how='any', axis=0, inplace=True)
 df.to_csv(f'OLX_used_cars_{NUM_PAGES}p.csv', index=False)
+
+print('\n--END')
