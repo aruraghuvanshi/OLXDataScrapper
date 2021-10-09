@@ -7,9 +7,14 @@ from tqdm import tqdm
 import numpy as np
 
 '''
+Author: Aru Singh Raghuvanshi
+
 This script scraps data from User Cars section of the main page of OLX.
 Can take upto 4 seconds to open each page on the browser,
 and a progressbar will indicate the progress of extraction.
+
+Date: 09-10-2021
+
 '''
 
 HEADERS = {'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) \
