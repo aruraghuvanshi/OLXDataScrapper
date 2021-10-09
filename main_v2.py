@@ -26,7 +26,7 @@ DRIVER = webdriver.Firefox()
 
 DRIVER.get(BASEURL + '/cars_c84')
 
-NUM_PAGES = 20
+NUM_PAGES = 1
 
 
 def get_carlinks_by_page(NUM_PAGES, DRIVER, BASEURL, HEADERS):
@@ -102,15 +102,6 @@ def get_vehicle_data(link):
         print(f'Data not found - {e}')
 
     try:
-        fueltype = sp.find('div', class_='_3qDp0').text.strip()
-        fueltype = clean_up_string(fueltype)
-        vdata['fueltype'] = fueltype
-    except Exception as e:
-        fueltype = 'Unknown'
-        vdata['fueltype'] = fueltype
-        print(f'Data not found - {e}')
-
-    try:
         price = sp.find('div', class_='_3FkyT').text.strip()
         price = clean_up_string(price)
         vdata['price'] = price
@@ -118,6 +109,15 @@ def get_vehicle_data(link):
         price = 'Not Listed'
         vdata['price'] = price
         print(f'Data not found - {e}')
+
+    #     try:
+    #         mileage = sp.find('div', class_='_3qDp0').text.strip()
+    #         mileage = clean_up_string(mileage)
+    #         vdata['mileage'] = mileage
+    #     except Exception as e:
+    #         mileage = 'Not Listed'
+    #         vdata['mileage'] = mileage
+    #         print(f'Data not found - {e}')
 
     try:
         sold_by = sp.find('span', class_='_1hYGL').text.strip()
@@ -147,6 +147,26 @@ def get_vehicle_data(link):
         print(f'Data not found - {e}')
 
     try:
+        details2 = ''.join(str(sp.find_all('div', class_='_3qDp0')))
+        details2 = clean_up_string(details2)
+        details2 = ' '.join(BeautifulSoup(details2, "html.parser").stripped_strings)
+
+        if details2.count(',') > 2:
+            details2 = details2.split(',')
+            details2[1:3] = [''.join(details2[1:3])]
+        else:
+            details2 = details2.split(',')
+
+        vdata['fuel'] = details2[0].strip()
+        vdata['mileage'] = details2[1].strip()
+        vdata['transmission'] = details2[2].strip()
+    except Exception as e:
+        vdata['fuel'] = 'Unknown'
+        vdata['mileage'] = 'N/A'
+        vdata['transmission'] = 'N/A'
+        print(f'Data not found - {e}')
+
+    try:
         desc = ''.join(str(sp.find_all('div', class_='_2e_o8')))
         desc = ' '.join(BeautifulSoup(desc, "html.parser").stripped_strings)
         desc = clean_up_string(desc)
@@ -166,9 +186,14 @@ carlinks = get_carlinks_by_page(NUM_PAGES, DRIVER, BASEURL, HEADERS)
 vehicle_data = []
 color = 'dodgerblue'
 
+print('\n\033[0;32mDone.\033[0m')
+print('\n\033[0;32mExtracting Data...\033[0m')
+
 for x in tqdm(carlinks, desc='PROGRESS', colour=color, unit='record'):
     vh = get_vehicle_data(x)
     vehicle_data.append(vh)
+
+print('\033[0;32mDone.\033[0m')
 
 df = pd.DataFrame(vehicle_data)
 df.dropna(how='any', axis=0, inplace=True)
