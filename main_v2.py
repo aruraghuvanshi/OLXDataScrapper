@@ -3,7 +3,7 @@ from bs4 import BeautifulSoup
 from selenium import webdriver
 import time
 import pandas as pd
-from tqdm import tqdm
+from tqdm.auto import tqdm
 import numpy as np
 
 '''
@@ -26,11 +26,11 @@ DRIVER = webdriver.Firefox()
 
 DRIVER.get(BASEURL + '/cars_c84')
 
-NUM_PAGES = 20
+NUM_PAGES = 6
 
 
 def get_carlinks_by_page(NUM_PAGES, DRIVER, BASEURL, HEADERS):
-    print('Opening Pages on Browser for Extraction. \033[0;31mPlease Wait...\033[0m')
+    print('Opening Pages on Browser for Extraction. \033[1;31mPlease Wait...\033[0m')
 
     def find_fetch_car_links(BASEURL, HEADERS):
 
@@ -73,6 +73,7 @@ def get_carlinks_by_page(NUM_PAGES, DRIVER, BASEURL, HEADERS):
         clx = clx + cl[ele]
 
     print(f'\nTotal Records Fetched: {len(clx)} from {NUM_PAGES} pages.')
+    time.sleep(1)   # To ensure target web page loading is complete
     return clx
 
 
@@ -162,7 +163,7 @@ def get_vehicle_data(link):
 carlinks = get_carlinks_by_page(NUM_PAGES, DRIVER, BASEURL, HEADERS)
 
 vehicle_data = []
-for x in tqdm(carlinks, desc='PROGRESS', colour='green'):
+for x in tqdm(carlinks, desc='PROGRESS', colour='blue', unit='record'):
     vh = get_vehicle_data(x)
     vehicle_data.append(vh)
 
