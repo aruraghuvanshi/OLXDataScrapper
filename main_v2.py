@@ -22,7 +22,6 @@ DRIVER = webdriver.Firefox()
 DRIVER.get(BASEURL + '/cars_c84')
 
 NUM_PAGES = 5
-NUM_PAGES_X = 5      # This line is added to only test GitPush.
 
 
 def get_carlinks_by_page(NUM_PAGES, DRIVER, BASEURL, HEADERS):
