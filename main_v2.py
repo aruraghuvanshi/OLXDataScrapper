@@ -22,14 +22,14 @@ HEADERS = {'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36
 
 BASEURL = 'https://www.olx.in'
 
-DRIVER = webdriver.Firefox()
+driver = webdriver.Firefox()
 
-DRIVER.get(BASEURL + '/cars_c84')
+driver.get(BASEURL + '/cars_c84')
 
 NUM_PAGES = 1
 
 
-def get_carlinks_by_page(NUM_PAGES, DRIVER, BASEURL, HEADERS):
+def get_carlinks_by_page(NUM_PAGES, driver, BASEURL, HEADERS):
     print('Opening Pages on Browser for Extraction. \033[1;31mPlease Wait...\033[0m')
 
     def find_fetch_car_links(BASEURL, HEADERS):
@@ -55,7 +55,7 @@ def get_carlinks_by_page(NUM_PAGES, DRIVER, BASEURL, HEADERS):
 
         print(f'\nLoading Page: \033[0;34m{count} of {NUM_PAGES}\033[0m.')
         try:
-            btn = DRIVER.find_element_by_class_name('JbJAl')
+            btn = driver.find_element_by_class_name('JbJAl')
         except Exception as e:
             print(f'Element not found on Page - {e}')
 
@@ -181,10 +181,10 @@ def get_vehicle_data(link):
 
 # -------------- Extraction and Inference Pipeline ----------------- ]
 
-carlinks = get_carlinks_by_page(NUM_PAGES, DRIVER, BASEURL, HEADERS)
+carlinks = get_carlinks_by_page(NUM_PAGES, driver, BASEURL, HEADERS)
 
 vehicle_data = []
-color = 'dodgerblue'
+color = 'blue'
 
 print('\n\033[0;32mDone.\033[0m')
 print('\n\033[0;32mExtracting Data...\033[0m')
