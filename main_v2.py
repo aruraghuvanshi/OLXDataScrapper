@@ -6,6 +6,10 @@ import pandas as pd
 from tqdm import tqdm
 import numpy as np
 
+'''
+This script scraps data from User Cars section of the main page of OLX
+'''
+
 HEADERS = {'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) \
             Chrome/56.0.2924.76 Safari/537.36'}
 
