@@ -28,7 +28,6 @@ driver.get(BASEURL + '/cars_c84')
 
 
 def get_carlinks_by_page(NUM_PAGES, driver, BASEURL, HEADERS, carname):
-
     def find_fetch_car_links(BASEURL, HEADERS, carname):
 
         r = requests.get(f'https://www.olx.in/cars_c84?filter=make_eq_{carname.lower()}', headers=HEADERS)
@@ -37,15 +36,15 @@ def get_carlinks_by_page(NUM_PAGES, driver, BASEURL, HEADERS, carname):
         time.sleep(2)
 
         carlinks = []
+
         carlist = sp.find_all('li', class_='EIR5N')
 
         for item in carlist:
             for link in item.find_all('a', href=True):
                 carlinks.append(BASEURL + link['href'])
 
-        print(f'Total links found on page: {len(carlinks)}')
+        print(f'Total links found on page: \033[0;34m{len(carlinks)}\033[0m')
         return carlinks
-
 
     cl, clx, count = [], [], 1
 
@@ -70,7 +69,7 @@ def get_carlinks_by_page(NUM_PAGES, driver, BASEURL, HEADERS, carname):
     for ele in range(0, len(cl)):
         clx = clx + cl[ele]
 
-    print(f'\nTotal Records Fetched: {len(clx)} from {NUM_PAGES} pages.')
+    print(f'\nTotal Records Fetched: \033[0;35m{len(clx)} from {NUM_PAGES} pages.\033[0m')
     return clx
 
 
@@ -102,14 +101,12 @@ def click_brand_check_box(driver, HEADERS, carname='Jaguar'):
 
 
 
-
 def click_drop_down(driver, HEADERS):
     r = requests.get(BASEURL + '/cars_c84', headers=HEADERS)
     sp = BeautifulSoup(r.content, 'lxml')
     driver.get(BASEURL + '/cars_c84')
     time.sleep(1)
     driver.find_element_by_xpath("//span[@class='sNOFy']").click()
-
 
 
 
@@ -214,18 +211,20 @@ def get_vehicle_data(link):
     return vdata
 
 
-
-# --------------------- USER CONFIG ----------------------------------------------------------------------- ]
+# --------------------- USER CONFIG ------------------------------- ]
 
 CARNAME = ['Jaguar', 'Mercedes-Benz', 'BMW']
 NUM_PAGES = 1
-tqdmcolor = 'blue'
+tqdmcolor = 'dodgerblue'
 
 
-# -------------- EXTRACTION AND INFERENCE PIPELINE -------------------------------------------------------- ]
+# -------------- EXTRACTION AND INFERENCE PIPELINE ----------------- ]
 
 
+ct = 0
 for xc in tqdm(CARNAME, desc='MASTER PROGRESS', colour='lightgreen', unit='vehicle'):
+    ct += 1
+    print('\n', ct, '-' * 100)
     click_brand_check_box(driver, HEADERS, carname=xc)
     time.sleep(2)
     carlinks = get_carlinks_by_page(NUM_PAGES, driver, BASEURL, HEADERS, xc)
@@ -240,4 +239,4 @@ for xc in tqdm(CARNAME, desc='MASTER PROGRESS', colour='lightgreen', unit='vehic
     df = pd.DataFrame(vehicle_data)
     df.dropna(how='any', axis=0, inplace=True)
     df.to_csv(f'OLX_used_cars_{NUM_PAGES}p_{xc}.csv', index=False)
-    print('\n\033[0;32mData written to Excel.\033[0m')
+    print('\033[0;32mData written to Excel.\033[0m')
