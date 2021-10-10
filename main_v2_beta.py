@@ -9,14 +9,14 @@ import numpy as np
 '''
 Author: Aru Singh Raghuvanshi
 
-This script scraps data from User Cars section of the main page of OLX.
+This script scraps data from User Cars section of the  page filtered
+by 'carname' of OLX. 
 Can take upto 4 seconds to open each page on the browser,
 and a progressbar will indicate the progress of extraction.
 This script filters by carname and extracts all filtered data for 
 that car into a csv file.
 
-Date: 09-10-2021
-
+Date: 10-10-2021
 '''
 
 HEADERS = {'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) \
@@ -36,10 +36,8 @@ def get_carlinks_by_page(NUM_PAGES, driver, BASEURL, HEADERS):
 
     def find_fetch_car_links(BASEURL, HEADERS, carname='jaguar'):
 
-        r = requests.get(
-            f'https://www.olx.in/cars_c84?filter=make_eq_{carname.lower()}', headers=HEADERS)
+        r = requests.get(f'https://www.olx.in/cars_c84?filter=make_eq_{carname.lower()}', headers=HEADERS)
         time.sleep(2)
-
         sp = BeautifulSoup(r.content, 'lxml')
 
         carlinks = []
@@ -167,7 +165,6 @@ def get_vehicle_data(link):
         vdata['city'] = details[2].strip()
         vdata['posting_date'] = details[3].strip()
     except Exception as e:
-        details = 'Not found'
         vdata['owner'] = 'Unknown'
         vdata['location'] = 'Unknown'
         vdata['city'] = 'N/A'
