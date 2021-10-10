@@ -9,11 +9,11 @@ import numpy as np
 '''
 Author: Aru Singh Raghuvanshi
 
-This script scraps data from User Cars section of the main page of OLX.
-Can take upto 4 seconds to open each page on the browser,
-and a progressbar will indicate the progress of extraction.
+This script scraps data from User Cars section of the main page of OLX,
+and filters by carname that is sent as an argument to a function. 
+A progressbar will indicate the progress of extraction.
 
-Date: 09-10-2021
+Date: 10-10-2021
 
 '''
 
@@ -26,9 +26,11 @@ driver = webdriver.Firefox()
 driver.get(BASEURL + '/cars_c84')
 
 NUM_PAGES = 1
+CARNAME = 'Jaguar'
 
 
 def get_carlinks_by_page(NUM_PAGES, driver, BASEURL, HEADERS):
+
     def find_fetch_car_links(BASEURL, HEADERS, carname='jaguar'):
 
         r = requests.get(f'https://www.olx.in/cars_c84?filter=make_eq_{carname.lower()}', headers=HEADERS)
@@ -37,7 +39,6 @@ def get_carlinks_by_page(NUM_PAGES, driver, BASEURL, HEADERS):
         sp = BeautifulSoup(r.content, 'lxml')
 
         carlinks = []
-
         carlist = sp.find_all('li', class_='EIR5N')
 
         for item in carlist:
@@ -74,6 +75,7 @@ def get_carlinks_by_page(NUM_PAGES, driver, BASEURL, HEADERS):
     return clx, cname
 
 
+
 def clean_up_string(original_string):
     characters_to_remove = "!()#~`$₹@[]"
 
@@ -82,6 +84,7 @@ def clean_up_string(original_string):
         new_string = new_string.replace(character, "")
 
     return new_string.strip()
+
 
 
 def click_brand_check_box(driver, HEADERS, carname='Jaguar'):
@@ -99,12 +102,14 @@ def click_brand_check_box(driver, HEADERS, carname='Jaguar'):
     driver.find_element_by_xpath('//input[@name="make"]').click()
 
 
+
 def click_drop_down(driver, HEADERS):
     r = requests.get(BASEURL + '/cars_c84', headers=HEADERS)
     sp = BeautifulSoup(r.content, 'lxml')
     driver.get(BASEURL + '/cars_c84')
     time.sleep(1)
     driver.find_element_by_xpath("//span[@class='sNOFy']").click()
+
 
 
 def get_vehicle_data(link):
@@ -208,15 +213,16 @@ def get_vehicle_data(link):
     return vdata
 
 
+
 # -------------- Extraction and Inference Pipeline ----------------- ]
 
 
-click_brand_check_box(driver, HEADERS, carname='BMW')
+click_brand_check_box(driver, HEADERS, carname=CARNAME)
 time.sleep(2)
 carlinks, carname = get_carlinks_by_page(NUM_PAGES, driver, BASEURL, HEADERS)
 
 vehicle_data = []
-color = 'dodgerblue'
+color = 'blue'
 
 print('\n\033[0;32mExtracting Data...\033[0m')
 for x in tqdm(carlinks, desc='DATA EXTRACTION PROGRESS', colour=color, unit='record'):
