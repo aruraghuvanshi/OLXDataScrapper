@@ -7,3 +7,7 @@ Output will be stored to CSV format in the root directory.
 Screenshot of Expected Output below for JupyterNotebook. Similar outputs will appear on other IDE outputs as well.
 
 ![Screenshot of expected Output](Capture.PNG)
+
+Screenshot of Final Output of one of the generated CSV files:
+
+![Screenshot of CSV Output](Capture2.PNG)
