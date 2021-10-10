@@ -12,6 +12,8 @@ Author: Aru Singh Raghuvanshi
 This script scraps data from User Cars section of the main page of OLX.
 Can take upto 4 seconds to open each page on the browser,
 and a progressbar will indicate the progress of extraction.
+This script filters by carname and extracts all filtered data for 
+that car into a csv file.
 
 Date: 09-10-2021
 
@@ -25,7 +27,7 @@ BASEURL = 'https://www.olx.in'
 driver = webdriver.Firefox()
 driver.get(BASEURL + '/cars_c84')
 
-NUM_PAGES = 1
+NUM_PAGES = 20
 
 
 def get_carlinks_by_page(NUM_PAGES, driver, BASEURL, HEADERS):
@@ -214,7 +216,7 @@ time.sleep(2)
 carlinks = get_carlinks_by_page(NUM_PAGES, driver, BASEURL, HEADERS)
 
 vehicle_data = []
-color = 'dodgerblue'
+color = 'blue'
 
 print('\n\033[0;32mExtracting Data...\033[0m')
 for x in tqdm(carlinks, desc='DATA EXTRACTION PROGRESS', colour=color, unit='record'):
