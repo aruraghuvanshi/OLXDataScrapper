@@ -25,18 +25,16 @@ BASEURL = 'https://www.olx.in'
 driver = webdriver.Firefox()
 driver.get(BASEURL + '/cars_c84')
 
-NUM_PAGES = 1
-CARNAME = 'Jaguar'
 
 
-def get_carlinks_by_page(NUM_PAGES, driver, BASEURL, HEADERS):
+def get_carlinks_by_page(NUM_PAGES, driver, BASEURL, HEADERS, carname):
 
-    def find_fetch_car_links(BASEURL, HEADERS, carname='jaguar'):
+    def find_fetch_car_links(BASEURL, HEADERS, carname):
 
         r = requests.get(f'https://www.olx.in/cars_c84?filter=make_eq_{carname.lower()}', headers=HEADERS)
-        time.sleep(2)
-
         sp = BeautifulSoup(r.content, 'lxml')
+
+        time.sleep(2)
 
         carlinks = []
         carlist = sp.find_all('li', class_='EIR5N')
@@ -46,7 +44,8 @@ def get_carlinks_by_page(NUM_PAGES, driver, BASEURL, HEADERS):
                 carlinks.append(BASEURL + link['href'])
 
         print(f'Total links found on page: {len(carlinks)}')
-        return carlinks, carname
+        return carlinks
+
 
     cl, clx, count = [], [], 1
 
@@ -65,14 +64,14 @@ def get_carlinks_by_page(NUM_PAGES, driver, BASEURL, HEADERS):
             print(f'Clickable Element not found on page for extraction - {e}')
 
         count += 1
-        k, cname = find_fetch_car_links(BASEURL, HEADERS)
+        k = find_fetch_car_links(BASEURL, HEADERS, carname)
         cl.append(k)
 
     for ele in range(0, len(cl)):
         clx = clx + cl[ele]
 
     print(f'\nTotal Records Fetched: {len(clx)} from {NUM_PAGES} pages.')
-    return clx, cname
+    return clx
 
 
 
@@ -88,7 +87,7 @@ def clean_up_string(original_string):
 
 
 def click_brand_check_box(driver, HEADERS, carname='Jaguar'):
-    print('Opening Pages on Browser for Extraction. \033[1;31mPlease Wait...\033[0m')
+    print('\nOpening Pages on Browser for Extraction. \033[1;31mPlease Wait...\033[0m')
     print(f'\nFiltering for \033[0;34m{carname}\033[0m in all Ads before extraction...')
     r = requests.get(BASEURL + '/cars_c84', headers=HEADERS)
     sp = BeautifulSoup(r.content, 'lxml')
@@ -103,12 +102,14 @@ def click_brand_check_box(driver, HEADERS, carname='Jaguar'):
 
 
 
+
 def click_drop_down(driver, HEADERS):
     r = requests.get(BASEURL + '/cars_c84', headers=HEADERS)
     sp = BeautifulSoup(r.content, 'lxml')
     driver.get(BASEURL + '/cars_c84')
     time.sleep(1)
     driver.find_element_by_xpath("//span[@class='sNOFy']").click()
+
 
 
 
@@ -214,22 +215,29 @@ def get_vehicle_data(link):
 
 
 
-# -------------- Extraction and Inference Pipeline ----------------- ]
+# --------------------- USER CONFIG ----------------------------------------------------------------------- ]
+
+CARNAME = ['Jaguar', 'Mercedes-Benz', 'BMW']
+NUM_PAGES = 1
+tqdmcolor = 'blue'
 
 
-click_brand_check_box(driver, HEADERS, carname=CARNAME)
-time.sleep(2)
-carlinks, carname = get_carlinks_by_page(NUM_PAGES, driver, BASEURL, HEADERS)
+# -------------- EXTRACTION AND INFERENCE PIPELINE -------------------------------------------------------- ]
 
-vehicle_data = []
-color = 'blue'
 
-print('\n\033[0;32mExtracting Data...\033[0m')
-for x in tqdm(carlinks, desc='DATA EXTRACTION PROGRESS', colour=color, unit='record'):
-    vh = get_vehicle_data(x)
-    vehicle_data.append(vh)
+for xc in tqdm(CARNAME, desc='MASTER PROGRESS', colour='lightgreen', unit='vehicle'):
+    click_brand_check_box(driver, HEADERS, carname=xc)
+    time.sleep(2)
+    carlinks = get_carlinks_by_page(NUM_PAGES, driver, BASEURL, HEADERS, xc)
 
-df = pd.DataFrame(vehicle_data)
-df.dropna(how='any', axis=0, inplace=True)
-df.to_csv(f'OLX_used_cars_{NUM_PAGES}p_{carname}.csv', index=False)
-print('\n\033[0;32mData written to Excel.\033[0m')
+    vehicle_data = []
+
+    print('\n\033[0;32mExtracting Data...\033[0m')
+    for x in tqdm(carlinks, desc=f'{xc.upper()} DATA EXTRACTION PROGRESS', colour=tqdmcolor, unit='record'):
+        vh = get_vehicle_data(x)
+        vehicle_data.append(vh)
+
+    df = pd.DataFrame(vehicle_data)
+    df.dropna(how='any', axis=0, inplace=True)
+    df.to_csv(f'OLX_used_cars_{NUM_PAGES}p_{xc}.csv', index=False)
+    print('\n\033[0;32mData written to Excel.\033[0m')
