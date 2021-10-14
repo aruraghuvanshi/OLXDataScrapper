@@ -215,7 +215,7 @@ def get_vehicle_data(link):
 
 CARNAME = ['Jaguar', 'Mercedes-Benz', 'BMW']
 NUM_PAGES = 1
-tqdmcolor = 'dodgerblue'
+
 
 
 # -------------- EXTRACTION AND INFERENCE PIPELINE ----------------- ]
@@ -232,7 +232,7 @@ for xc in tqdm(CARNAME, desc='MASTER PROGRESS', colour='lightgreen', unit='vehic
     vehicle_data = []
 
     print('\n\033[0;32mExtracting Data...\033[0m')
-    for x in tqdm(carlinks, desc=f'{xc.upper()} DATA EXTRACTION PROGRESS', colour=tqdmcolor, unit='record'):
+    for x in tqdm(carlinks, desc=f'{xc.upper()} DATA EXTRACTION PROGRESS', colour='dodgerblue', unit='record'):
         vh = get_vehicle_data(x)
         vehicle_data.append(vh)
 
