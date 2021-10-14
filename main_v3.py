@@ -216,8 +216,6 @@ def get_vehicle_data(link):
 CARNAME = ['Jaguar', 'Mercedes-Benz', 'BMW']
 NUM_PAGES = 1
 
-
-
 # -------------- EXTRACTION AND INFERENCE PIPELINE ----------------- ]
 
 
