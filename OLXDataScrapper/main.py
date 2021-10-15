@@ -4,6 +4,7 @@ from selenium import webdriver
 import time
 import pandas as pd
 from tqdm import tqdm
+import numpy as np
 
 HEADERS = {'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) \
             Chrome/56.0.2924.76 Safari/537.36'}
@@ -14,7 +15,7 @@ DRIVER = webdriver.Firefox()
 
 DRIVER.get(BASEURL + '/cars_c84')
 
-NUM_PAGES = 3
+NUM_PAGES = 5
 
 
 def get_carlinks_by_page(NUM_PAGES, DRIVER, BASEURL, HEADERS):
@@ -32,6 +33,7 @@ def get_carlinks_by_page(NUM_PAGES, DRIVER, BASEURL, HEADERS):
                 carlinks.append(BASEURL + link['href'])
 
         print(f'Total links found on page: {len(carlinks)}')
+        time.sleep(1)
         return carlinks
 
     cl, clx = [], []
@@ -49,6 +51,7 @@ def get_carlinks_by_page(NUM_PAGES, DRIVER, BASEURL, HEADERS):
     for ele in range(0, len(cl)):
         clx = clx + cl[ele]
 
+    time.sleep(1)
     print(f'\nTotal Records Fetched: {len(clx)} from {NUM_PAGES} pages.')
     return clx
 
@@ -77,7 +80,7 @@ def get_vehicle_data(link):
         name = clean_up_string(name)
         vdata['name'] = name
     except Exception as e:
-        name = 'Unnamed'
+        name = np.NaN
         vdata['name'] = name
         print(f'Data not found - {e}')
 
@@ -108,22 +111,23 @@ def get_vehicle_data(link):
         vdata['sold_by'] = sold_by
         print(f'Data not found - {e}')
 
-    details = ''.join(str(sp.find_all('div', class_='_1gasz')))
-    details = clean_up_string(details)
-    details = ' '.join(BeautifulSoup(details, "html.parser").stripped_strings)
-    details = details.split(',')
     try:
+        details = ''.join(str(sp.find_all('div', class_='_1gasz')))
+        details = clean_up_string(details)
+        details = ' '.join(BeautifulSoup(details, "html.parser").stripped_strings)
+        details = details.split(',')
+
         vdata['owner'] = details[0].strip()
         vdata['location'] = details[1].strip()
         vdata['city'] = details[2].strip()
         vdata['posting_date'] = details[3].strip()
     except Exception as e:
         details = 'Not found'
+        vdata['owner'] = 'Unknown'
+        vdata['location'] = 'Unknown'
+        vdata['city'] = 'N/A'
+        vdata['posting_date'] = 'Not Listed'
         print(f'Data not found - {e}')
-        vdata['owner'] = ''
-        vdata['location'] = ''
-        vdata['city'] = ''
-        vdata['posting_date'] = ''
 
     try:
         desc = ''.join(str(sp.find_all('div', class_='_2e_o8')))
@@ -131,7 +135,7 @@ def get_vehicle_data(link):
         desc = clean_up_string(desc)
         vdata['desc'] = desc
     except Exception as e:
-        desc = 'Not N/A'
+        desc = 'N/A'
         vdata['desc'] = desc
         print(f'Data not found - {e}')
 
@@ -139,10 +143,10 @@ def get_vehicle_data(link):
 
 
 vehicle_data = []
-for x in tqdm(carlinks):
+for x in tqdm(carlinks, desc='PROGRESS', colour='green', ):
     vh = get_vehicle_data(x)
     vehicle_data.append(vh)
 
 df = pd.DataFrame(vehicle_data)
-
+df.dropna(how='any', axis=0, inplace=True)
 df.to_csv(f'OLX_used_cars_{NUM_PAGES}p.csv', index=False)
